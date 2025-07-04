@@ -9,10 +9,12 @@ import { useAudio } from '../hooks/useAudio';
 import { Direction, Difficulty } from '../types/game';
 import { saveToLeaderboard } from '../utils/gameUtils';
 
+export type Theme = 'dark' | 'light' | 'neon' | 'ocean' | 'sunset' | 'forest';
+
 export const SnakeGame: React.FC = () => {
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [audioEnabled, setAudioEnabled] = useState(true);
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<Theme>('dark');
   const [activeTab, setActiveTab] = useState<'game' | 'help' | 'leaderboard' | 'developer'>('game');
   
   const { playBackgroundMusic, stopBackgroundMusic, playFoodSound, playGameOverSound } = useAudio(audioEnabled);
@@ -83,25 +85,101 @@ export const SnakeGame: React.FC = () => {
     }
   };
   
+  const getThemeStyles = (currentTheme: Theme) => {
+    switch (currentTheme) {
+      case 'dark':
+        return {
+          background: 'bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900',
+          text: 'text-white',
+          secondaryText: 'text-gray-300',
+          accent: 'text-green-400',
+          gradients: {
+            layer1: 'from-purple-600/40 via-blue-600/40 to-green-600/40',
+            layer2: 'from-cyan-600/30 via-teal-600/30 to-emerald-600/30',
+            layer3: 'from-rose-600/20 via-orange-600/20 to-yellow-600/20'
+          }
+        };
+      case 'light':
+        return {
+          background: 'bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100',
+          text: 'text-gray-800',
+          secondaryText: 'text-gray-600',
+          accent: 'text-green-600',
+          gradients: {
+            layer1: 'from-purple-400/40 via-blue-400/40 to-green-400/40',
+            layer2: 'from-cyan-400/30 via-teal-400/30 to-emerald-400/30',
+            layer3: 'from-rose-400/20 via-orange-400/20 to-yellow-400/20'
+          }
+        };
+      case 'neon':
+        return {
+          background: 'bg-gradient-to-br from-black via-gray-900 to-purple-900',
+          text: 'text-cyan-300',
+          secondaryText: 'text-pink-300',
+          accent: 'text-lime-400',
+          gradients: {
+            layer1: 'from-cyan-500/50 via-pink-500/50 to-lime-500/50',
+            layer2: 'from-purple-500/40 via-blue-500/40 to-green-500/40',
+            layer3: 'from-yellow-500/30 via-red-500/30 to-indigo-500/30'
+          }
+        };
+      case 'ocean':
+        return {
+          background: 'bg-gradient-to-br from-blue-900 via-teal-800 to-cyan-700',
+          text: 'text-cyan-100',
+          secondaryText: 'text-blue-200',
+          accent: 'text-teal-300',
+          gradients: {
+            layer1: 'from-blue-500/40 via-teal-500/40 to-cyan-500/40',
+            layer2: 'from-indigo-500/30 via-blue-500/30 to-teal-500/30',
+            layer3: 'from-purple-500/20 via-blue-500/20 to-cyan-500/20'
+          }
+        };
+      case 'sunset':
+        return {
+          background: 'bg-gradient-to-br from-orange-800 via-red-700 to-pink-600',
+          text: 'text-orange-100',
+          secondaryText: 'text-yellow-200',
+          accent: 'text-yellow-300',
+          gradients: {
+            layer1: 'from-orange-500/40 via-red-500/40 to-pink-500/40',
+            layer2: 'from-yellow-500/30 via-orange-500/30 to-red-500/30',
+            layer3: 'from-amber-500/20 via-orange-500/20 to-pink-500/20'
+          }
+        };
+      case 'forest':
+        return {
+          background: 'bg-gradient-to-br from-green-900 via-emerald-800 to-teal-700',
+          text: 'text-green-100',
+          secondaryText: 'text-emerald-200',
+          accent: 'text-lime-300',
+          gradients: {
+            layer1: 'from-green-500/40 via-emerald-500/40 to-teal-500/40',
+            layer2: 'from-lime-500/30 via-green-500/30 to-emerald-500/30',
+            layer3: 'from-yellow-500/20 via-green-500/20 to-teal-500/20'
+          }
+        };
+      default:
+        return getThemeStyles('dark');
+    }
+  };
+  
+  const themeStyles = getThemeStyles(theme);
+  
   const tabClass = (tab: string) => `
     px-4 py-2 rounded-lg font-medium transition-all duration-200
     ${activeTab === tab 
-      ? theme === 'dark' 
-        ? 'bg-green-600 text-white' 
-        : 'bg-green-500 text-white'
-      : theme === 'dark' 
-        ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
-        : 'bg-white text-gray-700 hover:bg-gray-100'
+      ? 'bg-green-600 text-white shadow-lg' 
+      : theme === 'dark' || theme === 'neon' || theme === 'ocean' || theme === 'forest'
+        ? 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 backdrop-blur-sm' 
+        : 'bg-white/50 text-gray-700 hover:bg-white/70 backdrop-blur-sm'
     }
   `;
   
   return (
     <div className={`
       min-h-screen transition-all duration-500 relative overflow-hidden
-      ${theme === 'dark' 
-        ? 'bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900' 
-        : 'bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100'
-      }
+      ${themeStyles.background}
     `}>
       {/* Enhanced Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -111,10 +189,7 @@ export const SnakeGame: React.FC = () => {
           <div 
             className={`
               absolute inset-0 opacity-30
-              ${theme === 'dark' 
-                ? 'bg-gradient-to-r from-purple-600/40 via-blue-600/40 to-green-600/40' 
-                : 'bg-gradient-to-r from-purple-400/40 via-blue-400/40 to-green-400/40'
-              }
+              bg-gradient-to-r ${themeStyles.gradients.layer1}
             `}
             style={{
               background: `
@@ -130,10 +205,7 @@ export const SnakeGame: React.FC = () => {
           <div 
             className={`
               absolute inset-0 opacity-20
-              ${theme === 'dark' 
-                ? 'bg-gradient-to-l from-cyan-600/30 via-teal-600/30 to-emerald-600/30' 
-                : 'bg-gradient-to-l from-cyan-400/30 via-teal-400/30 to-emerald-400/30'
-              }
+              bg-gradient-to-l ${themeStyles.gradients.layer2}
             `}
             style={{
               background: `
@@ -149,10 +221,7 @@ export const SnakeGame: React.FC = () => {
           <div 
             className={`
               absolute inset-0 opacity-15
-              ${theme === 'dark' 
-                ? 'bg-gradient-to-tr from-rose-600/20 via-orange-600/20 to-yellow-600/20' 
-                : 'bg-gradient-to-tr from-rose-400/20 via-orange-400/20 to-yellow-400/20'
-              }
+              bg-gradient-to-tr ${themeStyles.gradients.layer3}
             `}
             style={{
               background: `
@@ -172,7 +241,7 @@ export const SnakeGame: React.FC = () => {
               key={i}
               className={`
                 absolute w-2 h-2 rounded-full opacity-20
-                ${theme === 'dark' ? 'bg-white' : 'bg-gray-800'}
+                ${theme === 'light' ? 'bg-gray-800' : 'bg-white'}
               `}
               style={{
                 left: `${Math.random() * 100}%`,
@@ -187,36 +256,31 @@ export const SnakeGame: React.FC = () => {
         {/* Geometric Shapes */}
         <div className="absolute inset-0">
           <div 
-            className={`
-              absolute top-1/4 left-1/4 w-32 h-32 rounded-full blur-2xl opacity-10
-              ${theme === 'dark' ? 'bg-purple-500' : 'bg-purple-400'}
-            `}
+            className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full blur-2xl opacity-10 bg-purple-500"
             style={{ animation: 'pulse 4s ease-in-out infinite' }}
           />
           <div 
-            className={`
-              absolute top-3/4 right-1/4 w-24 h-24 rounded-full blur-2xl opacity-10
-              ${theme === 'dark' ? 'bg-blue-500' : 'bg-blue-400'}
-            `}
+            className="absolute top-3/4 right-1/4 w-24 h-24 rounded-full blur-2xl opacity-10 bg-blue-500"
             style={{ animation: 'pulse 6s ease-in-out infinite reverse' }}
           />
           <div 
-            className={`
-              absolute bottom-1/4 left-1/2 w-28 h-28 rounded-full blur-2xl opacity-10
-              ${theme === 'dark' ? 'bg-green-500' : 'bg-green-400'}
-            `}
+            className="absolute bottom-1/4 left-1/2 w-28 h-28 rounded-full blur-2xl opacity-10 bg-green-500"
             style={{ animation: 'pulse 5s ease-in-out infinite' }}
           />
         </div>
       </div>
       
       <div className="relative z-10 container mx-auto px-4 py-8">
+        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className={`text-4xl md:text-6xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-            Snake Game
+          <h1 className={`text-4xl md:text-6xl font-bold mb-2 ${themeStyles.text}`}>
+            🐍 Snake Game
           </h1>
-          <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-            A modern twist on the classic game
+          <p className={`text-lg md:text-xl font-medium ${themeStyles.accent}`}>
+            Presented by Neetesh Sharma
+          </p>
+          <p className={`text-sm md:text-base mt-2 ${themeStyles.secondaryText}`}>
+            A modern twist on the classic arcade game
           </p>
         </div>
         
@@ -224,7 +288,7 @@ export const SnakeGame: React.FC = () => {
         <div className="flex justify-center mb-8">
           <div className={`
             flex gap-2 p-2 rounded-xl backdrop-blur-sm border
-            ${theme === 'dark' 
+            ${theme === 'dark' || theme === 'neon' || theme === 'ocean' || theme === 'forest'
               ? 'bg-gray-900/40 border-gray-700/50' 
               : 'bg-white/40 border-gray-300/50'
             }
@@ -262,7 +326,12 @@ export const SnakeGame: React.FC = () => {
                   onResetGame={resetGame}
                   onDifficultyChange={setDifficulty}
                   onAudioToggle={() => setAudioEnabled(!audioEnabled)}
-                  onThemeToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  onThemeToggle={() => {
+                    const themes: Theme[] = ['dark', 'light', 'neon', 'ocean', 'sunset', 'forest'];
+                    const currentIndex = themes.indexOf(theme);
+                    const nextIndex = (currentIndex + 1) % themes.length;
+                    setTheme(themes[nextIndex]);
+                  }}
                 />
               </div>
             </div>

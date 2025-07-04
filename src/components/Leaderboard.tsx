@@ -2,37 +2,53 @@ import React from 'react';
 import { Trophy, Calendar, Target } from 'lucide-react';
 import { getLeaderboard } from '../utils/gameUtils';
 
+export type Theme = 'dark' | 'light' | 'neon' | 'ocean' | 'sunset' | 'forest';
+
 interface LeaderboardProps {
-  theme: 'light' | 'dark';
+  theme: Theme;
 }
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ theme }) => {
   const leaderboard = getLeaderboard();
   
+  const getThemeStyles = (currentTheme: Theme) => {
+    const isDark = ['dark', 'neon', 'ocean', 'forest'].includes(currentTheme);
+    
+    return {
+      isDark,
+      cardClass: `
+        p-6 rounded-xl backdrop-blur-sm border
+        ${isDark
+          ? 'bg-gray-900/40 border-gray-700/50' 
+          : 'bg-white/40 border-gray-300/50'
+        }
+      `,
+      entryClass: `
+        p-3 rounded-lg flex items-center justify-between
+        ${isDark
+          ? 'bg-gray-800/50 text-gray-300' 
+          : 'bg-gray-100/50 text-gray-700'
+        }
+      `,
+      textPrimary: isDark ? 'text-gray-200' : 'text-gray-800',
+      textSecondary: isDark ? 'text-gray-400' : 'text-gray-600'
+    };
+  };
+  
+  const styles = getThemeStyles(theme);
+  
   if (leaderboard.length === 0) {
     return (
-      <div className={`
-        p-6 rounded-xl backdrop-blur-sm border text-center
-        ${theme === 'dark' 
-          ? 'bg-gray-900/40 border-gray-700/50 text-gray-400' 
-          : 'bg-white/40 border-gray-300/50 text-gray-600'
-        }
-      `}>
-        <Trophy size={48} className="mx-auto mb-2 opacity-50" />
-        <div>No scores yet. Start playing to set a record!</div>
+      <div className={`${styles.cardClass} text-center`}>
+        <Trophy size={48} className={`mx-auto mb-2 opacity-50 ${styles.textSecondary}`} />
+        <div className={styles.textSecondary}>No scores yet. Start playing to set a record!</div>
       </div>
     );
   }
   
   return (
-    <div className={`
-      p-6 rounded-xl backdrop-blur-sm border
-      ${theme === 'dark' 
-        ? 'bg-gray-900/40 border-gray-700/50' 
-        : 'bg-white/40 border-gray-300/50'
-      }
-    `}>
-      <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
+    <div className={styles.cardClass}>
+      <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${styles.textPrimary}`}>
         <Trophy size={20} className="text-yellow-500" />
         Leaderboard
       </h3>
@@ -41,13 +57,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ theme }) => {
         {leaderboard.map((entry, index) => (
           <div 
             key={index}
-            className={`
-              p-3 rounded-lg flex items-center justify-between
-              ${theme === 'dark' 
-                ? 'bg-gray-800/50 text-gray-300' 
-                : 'bg-gray-100/50 text-gray-700'
-              }
-            `}
+            className={styles.entryClass}
           >
             <div className="flex items-center gap-3">
               <div className={`
@@ -55,7 +65,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ theme }) => {
                 ${index === 0 ? 'bg-yellow-500 text-white' : 
                   index === 1 ? 'bg-gray-400 text-white' : 
                   index === 2 ? 'bg-orange-500 text-white' : 
-                  theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600'
+                  styles.isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600'
                 }
               `}>
                 {index + 1}

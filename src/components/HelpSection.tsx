@@ -1,33 +1,46 @@
 import React from 'react';
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Target, Shield } from 'lucide-react';
 
+export type Theme = 'dark' | 'light' | 'neon' | 'ocean' | 'sunset' | 'forest';
+
 interface HelpSectionProps {
-  theme: 'light' | 'dark';
+  theme: Theme;
 }
 
 export const HelpSection: React.FC<HelpSectionProps> = ({ theme }) => {
-  const instructionClass = `
-    flex items-center gap-3 p-3 rounded-lg
-    ${theme === 'dark' 
-      ? 'bg-gray-800/50 text-gray-300' 
-      : 'bg-gray-100/50 text-gray-700'
-    }
-  `;
+  const getThemeStyles = (currentTheme: Theme) => {
+    const isDark = ['dark', 'neon', 'ocean', 'forest'].includes(currentTheme);
+    
+    return {
+      isDark,
+      cardClass: `
+        p-6 rounded-xl backdrop-blur-sm border
+        ${isDark
+          ? 'bg-gray-900/40 border-gray-700/50' 
+          : 'bg-white/40 border-gray-300/50'
+        }
+      `,
+      instructionClass: `
+        flex items-center gap-3 p-3 rounded-lg
+        ${isDark
+          ? 'bg-gray-800/50 text-gray-300' 
+          : 'bg-gray-100/50 text-gray-700'
+        }
+      `,
+      textPrimary: isDark ? 'text-gray-200' : 'text-gray-800'
+    };
+  };
+  
+  const styles = getThemeStyles(theme);
   
   return (
-    <div className={`
-      p-6 rounded-xl backdrop-blur-sm border
-      ${theme === 'dark' 
-        ? 'bg-gray-900/40 border-gray-700/50' 
-        : 'bg-white/40 border-gray-300/50'
-      }
-    `}>
-      <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
+    <div className={styles.cardClass}>
+      <h3 className={`text-xl font-bold mb-4 ${styles.textPrimary}`}>
         How to Play
       </h3>
       
       <div className="space-y-3">
-        <div className={instructionClass}>
+        <div className={styles.instructionClass}>
           <div className="flex gap-1">
             <ArrowUp size={16} />
             <ArrowDown size={16} />
@@ -40,7 +53,7 @@ export const HelpSection: React.FC<HelpSectionProps> = ({ theme }) => {
           </div>
         </div>
         
-        <div className={instructionClass}>
+        <div className={styles.instructionClass}>
           <Target size={16} className="text-red-500" />
           <div>
             <div className="font-medium">Eat food to grow longer</div>
@@ -48,7 +61,7 @@ export const HelpSection: React.FC<HelpSectionProps> = ({ theme }) => {
           </div>
         </div>
         
-        <div className={instructionClass}>
+        <div className={styles.instructionClass}>
           <Shield size={16} className="text-yellow-500" />
           <div>
             <div className="font-medium">Avoid hitting walls or your own body</div>
@@ -56,7 +69,7 @@ export const HelpSection: React.FC<HelpSectionProps> = ({ theme }) => {
           </div>
         </div>
         
-        <div className={instructionClass}>
+        <div className={styles.instructionClass}>
           <div className="w-4 h-4 bg-green-500 rounded-full"></div>
           <div>
             <div className="font-medium">Survive as long as possible</div>
