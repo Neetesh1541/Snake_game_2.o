@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { GameBoard } from './GameBoard';
 import { GameUI } from './GameUI';
+import { MobileControls } from './MobileControls';
 import { DeveloperInfo } from './DeveloperInfo';
 import { HelpSection } from './HelpSection';
 import { Leaderboard } from './Leaderboard';
 import { useSnakeGame } from '../hooks/useSnakeGame';
 import { useAudio } from '../hooks/useAudio';
+import { useTouchControls } from '../hooks/useTouchControls';
 import { Direction, Difficulty } from '../types/game';
 import { saveToLeaderboard } from '../utils/gameUtils';
 
@@ -33,6 +35,13 @@ export const SnakeGame: React.FC = () => {
     handleFoodEaten,
     handleGameOver
   );
+  
+  // Add touch controls for mobile
+  useTouchControls({
+    onDirectionChange: changeDirection,
+    gameStarted: gameState.gameStarted,
+    gameOver: gameState.gameOver
+  });
   
   useEffect(() => {
     if (gameState.gameStarted && !gameState.paused && !gameState.gameOver) {
@@ -332,6 +341,14 @@ export const SnakeGame: React.FC = () => {
                     const nextIndex = (currentIndex + 1) % themes.length;
                     setTheme(themes[nextIndex]);
                   }}
+                />
+                
+                {/* Mobile Controls - Only show on mobile */}
+                <MobileControls
+                  theme={theme}
+                  onDirectionChange={changeDirection}
+                  gameStarted={gameState.gameStarted}
+                  gameOver={gameState.gameOver}
                 />
               </div>
             </div>

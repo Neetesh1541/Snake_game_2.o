@@ -48,8 +48,8 @@ export const HelpSection: React.FC<HelpSectionProps> = ({ theme }) => {
             <ArrowRight size={16} />
           </div>
           <div>
-            <div className="font-medium">Use arrow keys or swipe to control the snake</div>
-            <div className="text-sm opacity-80">Move your snake around the game board</div>
+            <div className="font-medium">Use arrow keys, swipe, or touch controls</div>
+            <div className="text-sm opacity-80">Desktop: Arrow keys | Mobile: Swipe or touch buttons</div>
           </div>
         </div>
         
